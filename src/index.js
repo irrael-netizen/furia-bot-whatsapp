@@ -2,6 +2,8 @@ const express = require('express');
 const cors = require('cors');
 const config = require('./config');
 const logger = require('./logger');
+const { verifyTwilioSignature } = require('./middleware/auth');
+const { handleWhatsappWebhook } = require('./whatsapp/webhook');
 
 /**
  * Furia Bot WhatsApp - Main Express Application
@@ -47,6 +49,9 @@ app.get('/', (req, res) => {
     status: 'running',
   });
 });
+
+// WhatsApp webhook endpoint
+app.post('/webhook', verifyTwilioSignature, handleWhatsappWebhook);
 
 // 404 handler
 app.use((req, res) => {

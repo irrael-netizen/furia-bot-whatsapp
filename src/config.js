@@ -11,6 +11,8 @@ const requiredEnvVars = [
   'TWILIO_ACCOUNT_SID',
   'TWILIO_AUTH_TOKEN',
   'TWILIO_PHONE_NUMBER',
+  'TWILIO_WHATSAPP_NUMBER',
+  'TWILIO_WEBHOOK_SECRET',
   'ANTHROPIC_API_KEY',
   'SUPABASE_PROJECT_ID',
   'SUPABASE_URL',
@@ -62,6 +64,7 @@ const config = {
     accountSid: process.env.TWILIO_ACCOUNT_SID,
     authToken: process.env.TWILIO_AUTH_TOKEN,
     phoneNumber: process.env.TWILIO_PHONE_NUMBER,
+    whatsappNumber: process.env.TWILIO_WHATSAPP_NUMBER,
   },
 
   // Claude (Anthropic)
@@ -110,6 +113,11 @@ const config = {
   audit: {
     enableLogging: process.env.ENABLE_AUDIT_LOGGING === 'true',
     encryptionKey: process.env.ENCRYPTION_KEY,
+  },
+
+  // Webhook & Security
+  security: {
+    webhookSecret: process.env.TWILIO_WEBHOOK_SECRET,
   },
 };
 
