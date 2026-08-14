@@ -1,0 +1,57 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id                String          @id @default(cuid())
+  phoneNumber       String          @unique
+  role              String          // CEO, CFO, COO, ERC
+  divisionAssigned  String          // Bebidas, Gear, Reestructuración (CEO sees ALL)
+  active            Boolean         @default(true)
+  createdAt         DateTime        @default(now())
+  updatedAt         DateTime        @updatedAt
+
+  // Relations
+  reportConfigs     ReportConfig[]
+  queryLogs         QueryLog[]
+
+  @@index([phoneNumber])
+  @@index([role])
+}
+
+model ReportConfig {
+  id                String          @id @default(cuid())
+  userPhone         String
+  user              User            @relation(fields: [userPhone], references: [phoneNumber], onDelete: Cascade)
+  reportsDaily      String[]        // Array of report types: ["balance", "top_3_productos", etc]
+  horaEnvio         String          // HH:MM format (e.g., "07:30")
+  active            Boolean         @default(true)
+  createdAt         DateTime        @default(now())
+  updatedAt         DateTime        @updatedAt
+
+  @@index([userPhone])
+}
+
+model QueryLog {
+  id                String          @id @default(cuid())
+  userPhone         String
+  user              User            @relation(fields: [userPhone], references: [phoneNumber], onDelete: Cascade)
+  query             String          // The user's query text
+  intention         String          // Classified intent (e.g., "request_balance", "analyze_metrics")
+  parameters        String          // JSON stringified parameters
+  result            String          // JSON stringified result
+  duration          Int             // Milliseconds
+  success           Boolean         @default(true)
+  errorMessage      String?
+  createdAt         DateTime        @default(now())
+
+  @@index([userPhone])
+}
