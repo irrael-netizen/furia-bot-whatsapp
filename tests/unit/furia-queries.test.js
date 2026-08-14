@@ -83,7 +83,23 @@ describe('Furia queries', () => {
 
       expect(result.tipo).toBe('fuera_de_alcance');
       expect(result.solicitada).toBe('Polar');
-      expect(mirror.query).not.toHaveBeenCalled();
+      // Only the out-of-scope lookup runs; no financial view is touched.
+      expect(mirror.query).toHaveBeenCalledTimes(1);
+      expect(mirror.query.mock.calls[0][0]).toContain('fuera_de_alcance');
+    });
+
+    test('explains why a known company is out of scope', async () => {
+      getUserByPhone.mockResolvedValue(CEO);
+      mirror.query.mockResolvedValue([
+        { nombre: 'Reef Zone', motivo: 'Bases creadas pero vacias: su operacion sigue en Odoo.' },
+      ]);
+
+      const result = await executeFinancialQuery('+58001', 'resumen_empresa', {
+        empresa: 'Reef Zone',
+      });
+
+      expect(result.tipo).toBe('fuera_de_alcance');
+      expect(result.motivo).toContain('Odoo');
     });
 
     test('denies a company the user is not assigned to', async () => {

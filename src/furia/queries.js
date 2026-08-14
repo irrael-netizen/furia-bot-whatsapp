@@ -157,6 +157,26 @@ async function brechaRegistro(empresa) {
 }
 
 /**
+ * Why a company outside the six has no figures.
+ * Most are empty shells in Profit; two were excluded by decision, not for lack
+ * of data. Saying which is far more useful than a bare "out of scope".
+ *
+ * @param {string} nombre - Company name as the user wrote it
+ * @returns {Promise<string|null>} The recorded reason, or null if not listed
+ */
+async function motivoFueraDeAlcance(nombre) {
+  const rows = await mirror.query(
+    `select nombre, motivo
+       from furia.fuera_de_alcance
+      where nombre ilike '%' || $1 || '%'
+      limit 1`,
+    [nombre]
+  );
+
+  return rows[0] ? { nombre: rows[0].nombre, motivo: rows[0].motivo } : null;
+}
+
+/**
  * Resolve the user, enforce access, and run the requested query.
  *
  * @param {string} phoneNumber - Sender's phone number
@@ -177,9 +197,13 @@ async function executeFinancialQuery(phoneNumber, intention, parameters = {}) {
   // A name that is not one of the six has no data anywhere in the mirror.
   if (parameters.empresa && !empresa) {
     logger.info(`[Queries] Out of scope: ${parameters.empresa}`);
+    const registrada = await motivoFueraDeAlcance(parameters.empresa);
+
     return {
       tipo: 'fuera_de_alcance',
       solicitada: parameters.empresa,
+      nombre_registrado: registrada?.nombre || null,
+      motivo: registrada?.motivo || null,
       en_alcance: TODAS,
     };
   }
@@ -230,6 +254,7 @@ async function executeFinancialQuery(phoneNumber, intention, parameters = {}) {
 module.exports = {
   empresasPermitidas,
   executeFinancialQuery,
+  motivoFueraDeAlcance,
   // Exported for testing
   resumenEmpresa,
   plMensual,

@@ -163,8 +163,11 @@ Reglas adicionales:
   operacion intercompania sin eliminar. Si el dato trae "no_consolidable",
   dilo explicitamente.
 - Si "tiene_costeo_inventario" es false, no presentes margen bruto: no existe.
-- Si el tipo es "fuera_de_alcance": esa empresa no esta en el alcance, no hay
-  datos, y no se estima. Menciona cuales si estan.
+- Si el tipo es "fuera_de_alcance": no hay datos y no se estima. Si viene
+  "motivo", explicalo: dice por que esa empresa quedo fuera, y eso es
+  informacion util (bases vacias, operacion en otro sistema, excluida por
+  decision del proyecto). Si no viene motivo, di que no esta entre las seis
+  y nombralas.
 - Si el tipo es "sin_permiso": el usuario solo tiene acceso a su empresa asignada.
 - Si el tipo es "brecha_registro": no hay P&L, solo la brecha entre lo facturado
   y lo contabilizado. No des ningun resultado.
