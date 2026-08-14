@@ -1,7 +1,7 @@
 const { getUserByPhone } = require('../supabase/auth');
 const { sendWhatsappMessage } = require('./sender');
 const { extractIntent, generateResponse } = require('../claude/nlu');
-const { executeFinancialQuery } = require('../supabase/queries');
+const { executeFinancialQuery } = require('../furia/queries');
 const { checkRateLimit } = require('../utils/rateLimit');
 const { formatForWhatsapp } = require('../utils/formatter');
 const { logQuery } = require('../supabase/audit');
@@ -164,12 +164,16 @@ async function processMessageAsync(phoneNumber, messageBody, messageSid) {
       logger.info(`[${messageSid}] Unsupported query, sending guidance`);
       await sendWhatsappMessage(
         phoneNumber,
-        'Puedo darte información financiera de Furia. Pregúntame por ejemplo:\n\n' +
-          '• ¿Cuál es el margen de Bebidas?\n' +
-          '• Dame las ventas del mes\n' +
-          '• ¿Cuál es el balance?\n' +
-          '• Top productos de Gear\n' +
-          '• ¿Hay alertas?'
+        'Consulto las cifras de seis empresas: Furia Store, Furia Energy, ' +
+          'Caracas Fly, Altitude, Vida By Furia y FuriaGear.\n\n' +
+          'Pregúntame por ejemplo:\n' +
+          '• ¿Cuánto vendió Furia Energy?\n' +
+          '• ¿Cómo va Furia Store mes a mes?\n' +
+          '• ¿Cuál es el EBITDA de Caracas Fly?\n' +
+          '• ¿Por qué el reporte oficial de Altitude da distinto?\n' +
+          '• ¿Cuánto facturó Vida By Furia sin contabilizar?\n\n' +
+          'Solo tengo el resumen mensual: no hay detalle de productos, ' +
+          'clientes ni transacciones.'
       );
       return;
     }

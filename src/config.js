@@ -18,6 +18,7 @@ const requiredEnvVars = [
   'SUPABASE_ANON_KEY',
   'SUPABASE_SERVICE_ROLE_KEY',
   'DATABASE_URL',
+  'FURIA_MIRROR_URL',
   'LOG_LEVEL',
   'SUPPORTED_ROLES',
   'DIVISIONS',
@@ -125,6 +126,11 @@ const config = {
   audit: {
     enableLogging: process.env.ENABLE_AUDIT_LOGGING === 'true',
     encryptionKey: process.env.ENCRYPTION_KEY,
+  },
+
+  // Read-only mirror holding the reconstructed accounting for the six companies
+  furiaMirror: {
+    url: process.env.FURIA_MIRROR_URL,
   },
 
   // Webhook & Security

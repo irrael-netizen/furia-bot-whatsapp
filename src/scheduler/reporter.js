@@ -1,6 +1,6 @@
 const cron = require('node-cron');
 const { PrismaClient } = require('@prisma/client');
-const { executeFinancialQuery } = require('../supabase/queries');
+const { executeFinancialQuery } = require('../furia/queries');
 const { generateResponse } = require('../claude/nlu');
 const { sendWhatsappMessage } = require('../whatsapp/sender');
 const logger = require('../logger');

@@ -146,7 +146,8 @@ describe('NLU Module', () => {
         expect.objectContaining({
           model: 'claude-sonnet-5',
           max_tokens: 256,
-          system: expect.stringContaining('financial queries'),
+          // The parser must be told which companies exist, or it invents them.
+          system: expect.stringContaining('Furia Energy'),
           messages: expect.arrayContaining([
             expect.objectContaining({
               role: 'user',
@@ -228,7 +229,8 @@ describe('NLU Module', () => {
         expect.objectContaining({
           model: 'claude-sonnet-5',
           max_tokens: 256,
-          system: expect.stringContaining('friendly financial assistant'),
+          // Every figure has to leave with the period and caveat that qualify it.
+          system: expect.stringContaining('REGLA QUE NO SE ROMPE'),
           messages: expect.arrayContaining([
             expect.objectContaining({
               role: 'user',
