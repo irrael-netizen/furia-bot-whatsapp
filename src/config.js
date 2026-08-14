@@ -12,7 +12,6 @@ const requiredEnvVars = [
   'TWILIO_AUTH_TOKEN',
   'TWILIO_PHONE_NUMBER',
   'TWILIO_WHATSAPP_NUMBER',
-  'TWILIO_WEBHOOK_SECRET',
   'ANTHROPIC_API_KEY',
   'SUPABASE_PROJECT_ID',
   'SUPABASE_URL',
@@ -116,8 +115,10 @@ const config = {
   },
 
   // Webhook & Security
+  // Twilio signs webhooks with the account's Auth Token, so that is the
+  // secret by default; TWILIO_WEBHOOK_SECRET only overrides it if set.
   security: {
-    webhookSecret: process.env.TWILIO_WEBHOOK_SECRET,
+    webhookSecret: process.env.TWILIO_WEBHOOK_SECRET || process.env.TWILIO_AUTH_TOKEN,
   },
 };
 
