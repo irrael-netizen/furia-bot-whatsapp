@@ -144,7 +144,7 @@ describe('NLU Module', () => {
       // Verify API call
       expect(anthropic.messages.create).toHaveBeenCalledWith(
         expect.objectContaining({
-          model: 'claude-3-5-sonnet-20241022',
+          model: 'claude-sonnet-5',
           max_tokens: 256,
           system: expect.stringContaining('financial queries'),
           messages: expect.arrayContaining([
@@ -226,7 +226,7 @@ describe('NLU Module', () => {
 
       expect(anthropic.messages.create).toHaveBeenCalledWith(
         expect.objectContaining({
-          model: 'claude-3-5-sonnet-20241022',
+          model: 'claude-sonnet-5',
           max_tokens: 256,
           system: expect.stringContaining('friendly financial assistant'),
           messages: expect.arrayContaining([

@@ -28,6 +28,17 @@ const requiredEnvVars = [
   'ENABLE_AUDIT_LOGGING',
 ];
 
+/**
+ * Prefix a phone number with "whatsapp:" unless it already carries it.
+ * @param {string|undefined} value - Raw number from the environment
+ * @returns {string|undefined} Number in Twilio's WhatsApp sender format
+ */
+function withWhatsappPrefix(value) {
+  if (!value) return value;
+  const trimmed = value.trim();
+  return trimmed.startsWith('whatsapp:') ? trimmed : `whatsapp:${trimmed}`;
+}
+
 // Validate required environment variables
 function validateConfig() {
   const missing = [];
@@ -63,7 +74,9 @@ const config = {
     accountSid: process.env.TWILIO_ACCOUNT_SID,
     authToken: process.env.TWILIO_AUTH_TOKEN,
     phoneNumber: process.env.TWILIO_PHONE_NUMBER,
-    whatsappNumber: process.env.TWILIO_WHATSAPP_NUMBER,
+    // Twilio expects the sender as "whatsapp:+1415...", so accept it written
+    // either way and add the prefix when it is missing.
+    whatsappNumber: withWhatsappPrefix(process.env.TWILIO_WHATSAPP_NUMBER),
   },
 
   // Claude (Anthropic)
@@ -124,13 +137,13 @@ const config = {
 
 // Validate on load (only if not in test environment)
 if (process.env.NODE_ENV !== 'test') {
+  // Fail fast in every environment: booting without a required variable
+  // produces a bot that accepts messages and silently cannot answer them.
   try {
     validateConfig();
   } catch (error) {
     console.error(error.message);
-    if (process.env.NODE_ENV === 'production') {
-      process.exit(1);
-    }
+    process.exit(1);
   }
 }
 
