@@ -4,6 +4,7 @@ const config = require('./config');
 const logger = require('./logger');
 const { verifyTwilioSignature } = require('./middleware/auth');
 const { handleWhatsappWebhook } = require('./whatsapp/webhook');
+const { initializeScheduler } = require('./scheduler/reporter');
 
 /**
  * Furia Bot WhatsApp - Main Express Application
@@ -91,6 +92,10 @@ function startServer() {
       roles: config.roles,
       divisions: config.divisions,
     });
+
+    // Initialize scheduler for daily reports
+    initializeScheduler();
+    logger.info({ message: 'Scheduler initialized' });
   });
 
   // Graceful shutdown
