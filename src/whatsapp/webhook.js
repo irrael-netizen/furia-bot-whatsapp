@@ -158,6 +158,22 @@ async function processMessageAsync(phoneNumber, messageBody, messageSid) {
       parameters,
     });
 
+    // A greeting or off-topic message has no query to run, so answer with
+    // guidance instead of failing the pipeline.
+    if (intention === 'no_soportado') {
+      logger.info(`[${messageSid}] Unsupported query, sending guidance`);
+      await sendWhatsappMessage(
+        phoneNumber,
+        'Puedo darte información financiera de Furia. Pregúntame por ejemplo:\n\n' +
+          '• ¿Cuál es el margen de Bebidas?\n' +
+          '• Dame las ventas del mes\n' +
+          '• ¿Cuál es el balance?\n' +
+          '• Top productos de Gear\n' +
+          '• ¿Hay alertas?'
+      );
+      return;
+    }
+
     // Step 4: Execute financial query
     logger.debug(`[${messageSid}] Executing financial query: ${intention}`);
     queryResult = await executeFinancialQuery(phoneNumber, intention, parameters);

@@ -6,6 +6,33 @@
 const anthropic = require('./client');
 
 /**
+ * Pull a JSON object out of a model reply.
+ * Models often wrap JSON in a markdown fence or add a sentence around it,
+ * so parse the fenced block first and fall back to the outermost braces.
+ *
+ * @param {string} text - Raw reply text
+ * @returns {object} Parsed object
+ * @throws {Error} If no JSON object can be recovered
+ */
+function extractJsonObject(text) {
+  const fenced = text.match(/```(?:json)?\s*([\s\S]*?)```/i);
+  const candidate = (fenced ? fenced[1] : text).trim();
+
+  try {
+    return JSON.parse(candidate);
+  } catch (directParseError) {
+    const start = candidate.indexOf('{');
+    const end = candidate.lastIndexOf('}');
+
+    if (start === -1 || end <= start) {
+      throw new Error('No JSON object found in response');
+    }
+
+    return JSON.parse(candidate.slice(start, end + 1));
+  }
+}
+
+/**
  * Extract user intent from a query
  * Parses financial queries and returns structured intent with parameters
  *
@@ -25,8 +52,8 @@ Available intentions:
 - obtener_balance: Get balance sheet or financial summary
 - top_productos: Get top products by revenue
 - alertas: Get financial alerts or anomalies
-- flujo_caja: Get cash flow data
-- comparativa_periodos: Compare periods (week/month/quarter)
+- no_soportado: The message is not a financial query this bot can answer
+  (greetings, questions about the bot itself, anything off topic)
 
 You MUST respond ONLY with valid JSON in this exact format:
 {
@@ -65,7 +92,7 @@ User Query: "${userQuery}"`;
     // Parse JSON response
     let parsedResponse;
     try {
-      parsedResponse = JSON.parse(responseText);
+      parsedResponse = extractJsonObject(responseText);
     } catch (parseError) {
       throw new Error(`Failed to parse query: Invalid JSON response from Claude`);
     }
