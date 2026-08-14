@@ -14,6 +14,10 @@ const { initializeScheduler } = require('./scheduler/reporter');
 // Initialize Express app
 const app = express();
 
+// Behind Railway's proxy: read X-Forwarded-Proto so req.protocol is https.
+// Twilio signs the https URL, so without this every signature check fails.
+app.set('trust proxy', true);
+
 // Middleware
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
